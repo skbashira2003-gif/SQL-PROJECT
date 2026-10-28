@@ -1,82 +1,23 @@
-﻿# SQL-PROJECT
- # 🛒 Ecommerce Sales Analysis
-### Database Design & SQL Query Project
+# E-Commerce Sales Analysis Using MySQL
 
-**Prepared by:** Basheerunnisa  
+**Project by:** Basheerunnisa  
 **Database:** MySQL  
-**Tools:** MySQL Workbench, VS Code, GitHub
+**Tool:** MySQL Workbench
 
----
+## 1. Project Overview
 
-## 📌 1. Project Overview
+This project analyzes e-commerce data using MySQL. It stores customer details, product information, orders, and order items. SQL queries are used to analyze sales, customer activity, product performance, and order status.
 
-Ecommerce Sales Analysis is a database project developed using MySQL. It manages customer details, product information, orders, and order items. SQL queries help analyze sales, customer orders, product prices, and order status.
+## 2. Database Tables
 
-## 🎯 2. Project Objectives
+| Table | Description |
+|---|---|
+| `customers` | Customer details |
+| `products` | Product information |
+| `orders` | Customer order details |
+| `order_items` | Products and quantities in each order |
 
-- Maintain customer and product information.
-- Track orders and delivery status.
-- Calculate total sales and quantities sold.
-- Analyze sales by customer and product.
-- Identify customers who have not placed orders.
-- Generate useful business insights using SQL queries.
-
----
-
-## 🗂️ 3. Database Tables
-
-### 👥 Table 1: CUSTOMERS
-
-| Column Name | Data Type | Key |
-|---|---|---|
-| customer_id | INT | PK |
-| customer_name | VARCHAR(50) | — |
-| city | VARCHAR(50) | — |
-
-**Purpose:** Stores customer names and cities.
-
-### 📦 Table 2: PRODUCTS
-
-| Column Name | Data Type | Key |
-|---|---|---|
-| product_id | INT | PK |
-| product_name | VARCHAR(50) | — |
-| category | VARCHAR(50) | — |
-| price | DECIMAL(10,2) | — |
-
-**Purpose:** Stores product names, categories, and prices.
-
-### 🧾 Table 3: ORDERS
-
-| Column Name | Data Type | Key |
-|---|---|---|
-| order_id | INT | PK |
-| customer_id | INT | FK |
-| order_date | DATE | — |
-| status | VARCHAR(20) | — |
-
-**Purpose:** Stores customer orders, order dates, and status.
-
-### 🛍️ Table 4: ORDER_ITEMS
-
-| Column Name | Data Type | Key |
-|---|---|---|
-| item_id | INT | PK |
-| order_id | INT | FK |
-| product_id | INT | FK |
-| quantity | INT | — |
-| unit_price | DECIMAL(10,2) | — |
-
-**Purpose:** Stores the products, quantities, and unit prices in each order.
-
-**PK:** Primary Key — uniquely identifies a record.  
-**FK:** Foreign Key — connects related tables.
-
----
-
-## 🎨 4. Entity Relationship (ER) Diagram
-
-The following diagram shows all four tables, their columns, primary keys, foreign keys, and relationships.
+## 3. ER Diagram
 
 ```mermaid
 erDiagram
@@ -113,23 +54,93 @@ erDiagram
     }
 ```
 
-### 🔗 Relationships Explained
+## 4. Complete SQL Code — Create Tables
 
-| Relationship | Meaning |
-|---|---|
-| CUSTOMERS → ORDERS | One customer can place many orders. |
-| ORDERS → ORDER_ITEMS | One order can contain multiple order items. |
-| PRODUCTS → ORDER_ITEMS | One product can appear in multiple order items. |
+```sql
+CREATE DATABASE IF NOT EXISTS ecommerce_db;
 
-**Important:** `ORDER_ITEMS` is the bridge table connecting orders and products, representing their many-to-many relationship.
+USE ecommerce_db;
 
----
+CREATE TABLE IF NOT EXISTS customers (
+    customer_id INT PRIMARY KEY,
+    customer_name VARCHAR(50),
+    city VARCHAR(50)
+);
 
-## 📋 5. Sample Data
+CREATE TABLE IF NOT EXISTS products (
+    product_id INT PRIMARY KEY,
+    product_name VARCHAR(50),
+    category VARCHAR(50),
+    price DECIMAL(10,2)
+);
 
-### Customers
+CREATE TABLE IF NOT EXISTS orders (
+    order_id INT PRIMARY KEY,
+    customer_id INT,
+    order_date DATE,
+    status VARCHAR(20),
+    FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id)
+);
 
-| ID | Customer Name | City |
+CREATE TABLE IF NOT EXISTS order_items (
+    item_id INT PRIMARY KEY,
+    order_id INT,
+    product_id INT,
+    quantity INT,
+    unit_price DECIMAL(10,2),
+    FOREIGN KEY (order_id)
+        REFERENCES orders(order_id),
+    FOREIGN KEY (product_id)
+        REFERENCES products(product_id)
+);
+```
+
+## 5. Insert Sample Data
+
+```sql
+INSERT INTO customers VALUES
+(1, 'Rahul', 'Hyderabad'),
+(2, 'Priya', 'Vijayawada'),
+(3, 'Asha', 'Guntur'),
+(4, 'Kiran', 'Hyderabad'),
+(5, 'Ravi', 'Guntur');
+
+INSERT INTO products VALUES
+(101, 'Laptop', 'Electronics', 50000),
+(102, 'Mobile', 'Electronics', 20000),
+(103, 'Headphones', 'Accessories', 2000),
+(104, 'Keyboard', 'Accessories', 1500),
+(105, 'Mouse', 'Accessories', 800);
+
+INSERT INTO orders VALUES
+(1001, 1, '2026-01-10', 'Delivered'),
+(1002, 2, '2026-01-12', 'Delivered'),
+(1003, 3, '2026-02-05', 'Pending'),
+(1004, 1, '2026-02-15', 'Delivered'),
+(1005, 4, '2026-03-01', 'Cancelled');
+
+INSERT INTO order_items VALUES
+(1, 1001, 101, 1, 50000),
+(2, 1001, 103, 2, 2000),
+(3, 1002, 102, 1, 20000),
+(4, 1003, 104, 2, 1500),
+(5, 1004, 103, 1, 2000),
+(6, 1004, 105, 2, 800),
+(7, 1005, 102, 1, 20000);
+```
+
+## 6. SQL Queries with Outputs
+
+### Query 1: Display All Customers
+
+```sql
+SELECT * FROM customers;
+```
+
+**Output**
+
+| customer_id | customer_name | city |
 |---:|---|---|
 | 1 | Rahul | Hyderabad |
 | 2 | Priya | Vijayawada |
@@ -137,107 +148,209 @@ erDiagram
 | 4 | Kiran | Hyderabad |
 | 5 | Ravi | Guntur |
 
-### Products
+### Query 2: Display All Products
 
-| ID | Product Name | Category | Price (₹) |
+```sql
+SELECT * FROM products;
+```
+
+**Output**
+
+| product_id | product_name | category | price |
 |---:|---|---|---:|
-| 101 | Laptop | Electronics | 50,000 |
-| 102 | Mobile | Electronics | 20,000 |
-| 103 | Headphones | Accessories | 2,000 |
-| 104 | Keyboard | Accessories | 1,500 |
+| 101 | Laptop | Electronics | 50000 |
+| 102 | Mobile | Electronics | 20000 |
+| 103 | Headphones | Accessories | 2000 |
+| 104 | Keyboard | Accessories | 1500 |
 | 105 | Mouse | Accessories | 800 |
 
-### Orders
+### Query 3: Find Total Number of Orders
 
-| Order ID | Customer ID | Order Date | Status |
+```sql
+SELECT COUNT(*) AS total_orders
+FROM orders;
+```
+
+**Output**
+
+| total_orders |
+|---:|
+| 5 |
+
+### Query 4: Calculate Total Sales
+
+```sql
+SELECT SUM(quantity * unit_price) AS total_sales
+FROM order_items;
+```
+
+**Output**
+
+| total_sales |
+|---:|
+| 100600 |
+
+### Query 5: Find Sales from Delivered Orders
+
+```sql
+SELECT SUM(oi.quantity * oi.unit_price) AS delivered_sales
+FROM order_items oi
+JOIN orders o
+    ON oi.order_id = o.order_id
+WHERE o.status = 'Delivered';
+```
+
+**Output**
+
+| delivered_sales |
+|---:|
+| 77600 |
+
+### Query 6: Find the Most Expensive Product
+
+```sql
+SELECT *
+FROM products
+ORDER BY price DESC
+LIMIT 1;
+```
+
+**Output**
+
+| product_id | product_name | category | price |
+|---:|---|---|---:|
+| 101 | Laptop | Electronics | 50000 |
+
+### Query 7: Find Customer Order Details
+
+```sql
+SELECT
+    c.customer_name,
+    o.order_id,
+    o.order_date,
+    o.status
+FROM customers c
+JOIN orders o
+    ON c.customer_id = o.customer_id
+ORDER BY o.order_date;
+```
+
+**Output**
+
+| customer_name | order_id | order_date | status |
+|---|---:|---|---|
+| Rahul | 1001 | 2026-01-10 | Delivered |
+| Priya | 1002 | 2026-01-12 | Delivered |
+| Asha | 1003 | 2026-02-05 | Pending |
+| Rahul | 1004 | 2026-02-15 | Delivered |
+| Kiran | 1005 | 2026-03-01 | Cancelled |
+
+### Query 8: Count Orders by Status
+
+```sql
+SELECT
+    status,
+    COUNT(*) AS total_orders
+FROM orders
+GROUP BY status;
+```
+
+**Output**
+
+| status | total_orders |
+|---|---:|
+| Cancelled | 1 |
+| Delivered | 3 |
+| Pending | 1 |
+
+### Query 9: Find Customers from Hyderabad
+
+```sql
+SELECT *
+FROM customers
+WHERE city = 'Hyderabad';
+```
+
+**Output**
+
+| customer_id | customer_name | city |
+|---:|---|---|
+| 1 | Rahul | Hyderabad |
+| 4 | Kiran | Hyderabad |
+
+### Query 10: Find Products Costing More Than 5000
+
+```sql
+SELECT *
+FROM products
+WHERE price > 5000;
+```
+
+**Output**
+
+| product_id | product_name | category | price |
+|---:|---|---|---:|
+| 101 | Laptop | Electronics | 50000 |
+| 102 | Mobile | Electronics | 20000 |
+
+### Query 11: Find the Cheapest Product
+
+```sql
+SELECT *
+FROM products
+ORDER BY price ASC
+LIMIT 1;
+```
+
+**Output**
+
+| product_id | product_name | category | price |
+|---:|---|---|---:|
+| 105 | Mouse | Accessories | 800 |
+
+### Query 12: Find Delivered Orders
+
+```sql
+SELECT *
+FROM orders
+WHERE status = 'Delivered';
+```
+
+**Output**
+
+| order_id | customer_id | order_date | status |
 |---:|---:|---|---|
 | 1001 | 1 | 2026-01-10 | Delivered |
 | 1002 | 2 | 2026-01-12 | Delivered |
-| 1003 | 3 | 2026-02-05 | Pending |
 | 1004 | 1 | 2026-02-15 | Delivered |
-| 1005 | 4 | 2026-03-01 | Cancelled |
 
----
+## 7. Project Results
 
-## 💻 6. SQL Queries Covered
-
-This project includes 20 queries from the uploaded documentation:
-
-1. Display all customers.
-2. Display all products.
-3. Find the total number of orders.
-4. Calculate total sales.
-5. Calculate sales from delivered orders.
-6. Find the most expensive product.
-7. Display customer order details.
-8. Count orders by status.
-9. Find customers from Hyderabad.
-10. Find products costing more than ₹5,000.
-11. Find the cheapest product.
-12. Find delivered orders.
-13. Find products priced between ₹1,000 and ₹25,000.
-14. Find customers who have not placed orders.
-15. Calculate total quantity sold.
-16. Display all customers and their orders, including customers without orders.
-17. Find the number of products in each order.
-18. Count customers in each city.
-19. Calculate the average product price.
-20. Display complete order details using joins.
-
-### SQL Concepts Used
-
-- SELECT, WHERE and ORDER BY
-- COUNT, SUM, AVG, MIN and MAX
-- GROUP BY
-- INNER JOIN and LEFT JOIN
-- BETWEEN and IS NULL
-- LIMIT
-- Primary Key and Foreign Key
-- Relational database design
-
----
-
-## 📊 7. Results Summary
-
-The following figures are taken from the uploaded project documentation.
-
-| Metric | Documented Result |
+| Analysis | Result |
 |---|---:|
-| Total Orders | 5 |
-| Total Sales | ₹1,00,600 |
-| Delivered-Order Sales | ₹77,600 |
-| Total Quantity Sold | 10 |
-| Most Expensive Product | Laptop — ₹50,000 |
-| Cheapest Product | Mouse — ₹800 |
-| Customer Without Orders | Ravi |
-| Delivered Orders | 3 |
-| Pending Orders | 1 |
-| Cancelled Orders | 1 |
+| Total orders | 5 |
+| Total sales across all order items | 100600 |
+| Sales from delivered orders | 77600 |
+| Most expensive product | Laptop |
+| Cheapest product | Mouse |
+| Customers with no orders | Ravi |
+| Delivered orders | 3 |
+| Pending orders | 1 |
+| Cancelled orders | 1 |
 
----
+*Note:* Total sales includes items from Delivered, Pending, and Cancelled orders. Delivered sales includes only Delivered orders.
 
-## ⚙️ 8. How to Run the Project
+## 8. SQL Concepts Used
 
-1. Install MySQL Server and MySQL Workbench.
-2. Connect to the MySQL Server.
-3. Open `ecommerce project query.sql`.
-4. Execute the database and table creation statements.
-5. Insert the sample data.
-6. Run each SQL query.
-7. Check the output in MySQL Workbench's Result Grid.
+- Database and table creation
+- Primary Key and Foreign Key
+- INSERT and SELECT
+- WHERE, ORDER BY, LIMIT
+- Aggregate functions: COUNT(), SUM()
+- GROUP BY
+- INNER JOIN
+- Filtering and sorting
 
----
+## 9. Conclusion
 
-## 🚀 9. Future Enhancements
-
-- Add payment information.
-- Track product shipments.
-- Include discounts and returns.
-- Create monthly sales reports.
-- Build a dashboard for sales visualization.
-
----
-
-## ✅ 10. Conclusion
-
-The Ecommerce Sales Analysis project demonstrates practical MySQL skills, relational database design, primary and foreign keys, joins, aggregate functions, and sales analysis. It is a beginner-friendly SQL portfolio project that can be extended with additional business features.
+This project demonstrates how MySQL can be used to manage e-commerce data and analyze sales, customers, products, and order status. It provides practical experience with relational database design, joins, aggregate functions, and SQL queries.
